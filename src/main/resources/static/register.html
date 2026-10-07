@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HomeSplit Registration</title>
+</head>
+<body>
+
+    <h1>HomeSplit Registration</h1>
+
+    <form id="registerForm">
+
+        <input type="text" id="name" placeholder="Name" required>
+        <br><br>
+
+        <input type="email" id="email" placeholder="Email" required>
+        <br><br>
+
+        <input type="password" id="password" placeholder="Password" required>
+        <br><br>
+
+        <button type="submit">Register</button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const user = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            };
+
+            const response = await fetch("/users/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(user)
+            });
+
+            const data = await response.json();
+
+            document.getElementById("message").innerText =
+                "Registration successful! Welcome " + data.name;
+        });
+    </script>
+
+</body>
+</html>

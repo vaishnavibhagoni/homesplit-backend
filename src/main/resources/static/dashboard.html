@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>HomeSplit Dashboard</title>
+</head>
+
+<body>
+
+    <h1>HomeSplit Dashboard</h1>
+
+    <h2>Welcome to HomeSplit!</h2>
+
+    <p>You are successfully logged in.</p>
+
+    <hr>
+
+    <!-- Create Household -->
+
+    <h2>Create Household</h2>
+
+    <form id="householdForm">
+
+        <input
+            type="text"
+            id="householdName"
+            placeholder="Enter household name"
+            required
+        >
+
+        <button type="submit">
+            Create Household
+        </button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <hr>
+
+    <!-- Add Member -->
+
+    <h2>Add Member</h2>
+
+    <form id="memberForm">
+
+        <input
+            type="number"
+            id="householdId"
+            placeholder="Household ID"
+            required
+        >
+
+        <input
+            type="number"
+            id="userId"
+            placeholder="User ID"
+            required
+        >
+
+        <button type="submit">
+            Add Member
+        </button>
+
+    </form>
+
+    <p id="memberMessage"></p>
+
+    <hr>
+
+    <!-- Add Expense -->
+
+    <h2>Add Expense</h2>
+
+    <form id="expenseForm">
+
+        <input
+            type="number"
+            id="expenseHouseholdId"
+            placeholder="Household ID"
+            required
+        >
+
+        <br><br>
+
+        <input
+            type="number"
+            id="paidByUserId"
+            placeholder="Paid by User ID"
+            required
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            id="description"
+            placeholder="Expense description"
+            required
+        >
+
+        <br><br>
+
+        <input
+            type="number"
+            id="amount"
+            placeholder="Amount"
+            step="0.01"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Add Expense
+        </button>
+
+    </form>
+
+    <p id="expenseMessage"></p>
+
+    <hr>
+
+    <!-- Split Expense Equally -->
+
+    <h2>Split Expense Equally</h2>
+
+    <form id="splitForm">
+
+        <input
+            type="number"
+            id="splitExpenseId"
+            placeholder="Expense ID"
+            required
+        >
+
+        <br><br>
+
+        <input
+            type="number"
+            id="splitAmount"
+            placeholder="Total Amount"
+            step="0.01"
+            required
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            id="splitUserIds"
+            placeholder="User IDs e.g. 1,2,3"
+            required
+        >
+
+        <br><br>
+
+        <button
+            type="submit"
+            id="splitButton"
+        >
+            Split Equally
+        </button>
+
+    </form>
+
+    <p id="splitMessage"></p>
+
+    <hr>
+
+    <!-- Logout -->
+
+    <button onclick="window.location.href='login.html'">
+        Logout
+    </button>
+
+
+    <script>
+
+        // =========================
+        // CREATE HOUSEHOLD
+        // =========================
+
+        document.getElementById("householdForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const household = {
+                    name: document.getElementById("householdName").value
+                };
+
+                const response = await fetch("/households", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(household)
+                });
+
+                const data = await response.json();
+
+                document.getElementById("message").innerText =
+                    "Household created successfully! ID: " + data.id;
+
+            });
+
+
+        // =========================
+        // ADD MEMBER
+        // =========================
+
+        document.getElementById("memberForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const member = {
+
+                    householdId: Number(
+                        document.getElementById("householdId").value
+                    ),
+
+                    userId: Number(
+                        document.getElementById("userId").value
+                    )
+
+                };
+
+                const response = await fetch("/household-members", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(member)
+
+                });
+
+                const data = await response.json();
+
+                document.getElementById("memberMessage").innerText =
+                    "Member added successfully! Member ID: " + data.id;
+
+            });
+
+
+        // =========================
+        // ADD EXPENSE
+        // =========================
+
+        document.getElementById("expenseForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const expense = {
+
+                    householdId: Number(
+                        document.getElementById("expenseHouseholdId").value
+                    ),
+
+                    paidByUserId: Number(
+                        document.getElementById("paidByUserId").value
+                    ),
+
+                    description:
+                        document.getElementById("description").value,
+
+                    amount: Number(
+                        document.getElementById("amount").value
+                    )
+
+                };
+
+                const response = await fetch("/expenses", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(expense)
+
+                });
+
+                const data = await response.json();
+
+                document.getElementById("expenseMessage").innerText =
+                    "Expense added successfully! Expense ID: " + data.id;
+
+            });
+
+
+        // =========================
+        // SPLIT EXPENSE EQUALLY
+        // =========================
+
+        document.getElementById("splitForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const splitButton =
+                    document.getElementById("splitButton");
+
+                const message =
+                    document.getElementById("splitMessage");
+
+
+                // Get values
+
+                const expenseId = Number(
+                    document.getElementById("splitExpenseId").value
+                );
+
+                const amount = Number(
+                    document.getElementById("splitAmount").value
+                );
+
+                const userIdsText =
+                    document.getElementById("splitUserIds").value.trim();
+
+
+                // Convert "1,2,3" into [1,2,3]
+
+                const userIds = userIdsText
+                    .split(",")
+                    .map(id => Number(id.trim()))
+                    .filter(id => !isNaN(id));
+
+
+                // Basic validation
+
+                if (!expenseId || !amount || userIds.length === 0) {
+
+                    message.innerText =
+                        "Please enter Expense ID, Amount and User IDs.";
+
+                    return;
+                }
+
+
+                // Show exactly what will be sent
+
+                message.innerText =
+                    "Sending: Expense ID = "
+                    + expenseId
+                    + ", Amount = ₹"
+                    + amount
+                    + ", Users = "
+                    + userIds.join(", ");
+
+
+                // Prevent double-clicks
+
+                splitButton.disabled = true;
+
+
+                try {
+
+                    const url =
+                        "/expense-splits/equal"
+                        + "?expenseId="
+                        + encodeURIComponent(expenseId)
+                        + "&totalAmount="
+                        + encodeURIComponent(amount);
+
+
+                    const response = await fetch(url, {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify(userIds)
+
+                    });
+
+
+                    const data = await response.json();
+
+
+                    if (!response.ok) {
+
+                        message.innerText =
+                            "Error: " + JSON.stringify(data);
+
+                        return;
+                    }
+
+
+                    // Display result
+
+                    let result =
+                        "Expense split successfully!<br><br>";
+
+
+                    data.forEach(function(split) {
+
+                        result +=
+                            "User "
+                            + split.userId
+                            + " → ₹"
+                            + split.shareAmount
+                            + "<br>";
+
+                    });
+
+
+                    message.innerHTML = result;
+
+
+                } catch (error) {
+
+                    message.innerText =
+                        "Error connecting to server: "
+                        + error.message;
+
+                } finally {
+
+                    splitButton.disabled = false;
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>
