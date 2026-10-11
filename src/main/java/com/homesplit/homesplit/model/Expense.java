@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Expense {
@@ -13,23 +16,35 @@ public class Expense {
     private Long id;
 
     private Long householdId;
-
     private Long paidByUserId;
-
     private String description;
-
     private Double amount;
+
+    private LocalDateTime createdAt;
 
     public Expense() {
     }
 
-    public Expense(Long householdId, Long paidByUserId,
-                   String description, Double amount) {
-
+    public Expense(
+            Long householdId,
+            Long paidByUserId,
+            String description,
+            Double amount) {
         this.householdId = householdId;
         this.paidByUserId = paidByUserId;
         this.description = description;
         this.amount = amount;
+    }
+
+        @PrePersist
+    public void setCreatedAtIfMissing() {
+        System.out.println("PrePersist called for expense: " + description);
+
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+
+        System.out.println("Expense createdAt: " + createdAt);
     }
 
     public Long getId() {
@@ -66,5 +81,13 @@ public class Expense {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

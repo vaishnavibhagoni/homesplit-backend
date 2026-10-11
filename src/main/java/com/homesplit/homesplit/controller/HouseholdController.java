@@ -18,4 +18,11 @@ public class HouseholdController {
     public Household createHousehold(@RequestBody Household household) {
         return householdService.createHousehold(household);
     }
+    
+@GetMapping("/user/{userId}")
+public java.util.List<com.homesplit.homesplit.model.Household> getHouseholdsByUser(
+        @PathVariable Long userId) {
+    return householdService.getHouseholdsByUser(userId);
+}
+
 }
