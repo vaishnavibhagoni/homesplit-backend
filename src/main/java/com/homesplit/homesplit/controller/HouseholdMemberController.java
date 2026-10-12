@@ -48,8 +48,20 @@ public List<HouseholdMember> getHouseholdsByUser(
     @PostMapping("/add")
 public UserResponse addMemberToHousehold(
         @RequestBody AddMemberRequest request) {
+    try {
+        System.out.println("ADD MEMBER REQUEST RECEIVED");
+        System.out.println("Household ID: " + request.getHouseholdId());
+        System.out.println("Name: " + request.getName());
+        System.out.println("Email: " + request.getEmail());
 
-    return householdMemberService.addMemberToHousehold(request);
+        return householdMemberService.addMemberToHousehold(request);
+
+    } catch (Exception e) {
+        System.err.println("ADD MEMBER FAILED:");
+        e.printStackTrace();
+        throw e;
+    }
+ 
 }
     @DeleteMapping("/household/{householdId}/user/{userId}")
 public void removeMember(
